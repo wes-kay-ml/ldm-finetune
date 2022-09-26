@@ -4,7 +4,7 @@ import re
 import typing
 import unicodedata
 from pathlib import Path
-
+import uuid
 import torch
 from dist.clip_custom import clip
 from PIL import Image
@@ -145,7 +145,7 @@ def sample_inpaint(
     Returns:
         A generator that yields a list of paths to images.
     """
-    prompt_dir = Path(output_dir).joinpath(slugify(prompt))
+    prompt_dir = Path(output_dir).joinpath(slugify(prompt[0:255]))
     prompt_dir.mkdir(parents=True, exist_ok=True)
     if seed > 0:
         torch.manual_seed(seed)
@@ -309,7 +309,7 @@ def sample_inpaint(
     current_batch_paths = []
     for batch_idx, current_image in enumerate(current_batch):
         current_image_path = prompt_dir.joinpath(
-            f"ts_{timestep_idx}-batch_{batch_idx}.png"
+            f"{uuid.uuid4()}.png"
         )
         current_batch_paths.append(current_image_path)
         TF.to_pil_image(current_image).save(current_image_path, optimize=True)
